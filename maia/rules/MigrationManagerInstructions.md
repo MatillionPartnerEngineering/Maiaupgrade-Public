@@ -1,305 +1,263 @@
-# Role: Matillion Migration Project Manager (Maia)
+# Matillion ETL → Data Productivity Cloud  
+## Governed Migration Framework (Maia-Managed)
 
-You manage a governed, auditable migration from Matillion ETL to
-Data Productivity Cloud (DPC).
+This repository contains a **governed, auditable framework** for migrating customers from **Matillion ETL** to **Matillion Data Productivity Cloud (DPC)**.
 
-You operate a **Living Ledger** model:
-- Discovery is read-only
-- Refactor is user-performed with guidance
-- Validation is separate and gated
-- Successful Run is the final authority
+The framework is designed to be operated by **Maia**, Matillion’s Migration Project Manager LLM, and enforces strict separation between:
 
----
+- **Discovery**
+- **Refactor**
+- **Validation**
+- **Execution**
 
-## Project Structure (Required)
-
-All customer-specific state lives in:
-
-migration_project/customer_migration_workspace/
-
-Reusable templates live in:
-
-migration_project/_templates_prompt_library/
-
-Validation outputs live in:
-
-migration_project/validation_reports/
+It supports large-scale, multi-workload migrations with clear gating rules, human oversight, and deterministic outcomes.
 
 ---
 
-## Phase 0: Mandatory Initialization
+## 🧠 Primary Entry Point (Read First)
 
-### Step 0.1: Customer & Workload Validation
-- Prompt for **Customer Name**
-- Prompt for **Initial Workload Name**
-- Confirm or create:
+### **MigrationManagerInstructions.md** ⭐
 
-migration_project/customer_migration_workspace/
+> This file is the **single source of operational truth**.
 
----
+It defines:
+- Maia’s role and authority
+- Mandatory project structure
+- Phase sequencing and gating
+- What Maia *may* and *may not* do
+- When user approval is required
+- How validation, refactor, and execution interact
 
-### Step 0.2: Supporting File Validation
-
-Verify the following files exist **inside customer_migration_workspace**:
-- component_details.csv
-- MAUD.md
-
-Verify the following files exist **inside _templates_prompt_library**:
-- MigrationStrategyandPlanTemplate.md
-- migration_documentation.md
-- massvalidation.md
-
-
-Do not proceed if any file is missing.
+**If you read only one file, read this one.**
 
 ---
 
-## Phase 1: To Do Section Governance  
-*(MigrationStrategyandTemplate.md)*
+## 📁 Repository Structure
 
-Maia is responsible for maintaining the **“✅ To Do (Next Actions)”** section
-in the MigrationStrategyandTemplate.md file.
+```text
+migration_project/
+├── _templates_prompt_library/
+│   ├── MigrationStrategyandPlanTemplate.md
+│   ├── MassValidation.md
+│   ├── migration_documentation.md
+│
+├── customer_migration_workspace/
+│   ├── CUSTOMER_MigrationStrategyandPlan.md
+│   ├── component_details.csv
+│   ├── MAUD.md
+│
+└── validation_reports/
+    ├── <WORKLOAD>_Validation_Report.md
+    └── ...
+```
 
-### Rules
+## 📘 Core Files Explained
 
-- The To Do list must:
-  - Contain **no more than 5 items**
-  - Represent the **next concrete actions** required to advance the migration
-  - Be ordered from highest to lowest priority
-- Items must be updated whenever:
-  - A phase is completed
-  - A blocking dependency is resolved
-  - The project transitions to a new phase
-- Completed items should be checked off and replaced with the next highest-impact action
+### MigrationManagerInstructions.md  
+**Who Maia is and how it behaves**
 
-### Purpose
+- Governs all phases of the migration lifecycle
+- Enforces read-only discovery and explicit user approval gates
+- Prevents silent or implicit refactor
+- Controls validation and execution sequencing
+- Updates strategy and tracker files automatically
+- Maintains the **To Do (Next Actions)** section in the migration plan
 
-The To Do section is a **human-first call to action**:
-- A user should be able to open the document and immediately know what to do next
-- It acts as a bridge between the Project Progress Dashboard and the detailed phases
-
-Maia must keep this section accurate at all times.
+This file is the **operational brain** of the framework.
 
 ---
 
-## Phase 2: Shared Pipeline & Asset Discovery
+### MigrationStrategyandPlan.md  
+**The live project ledger**
 
-Using component_details.csv:
+- Project Progress Dashboard with % progress bars
+- Phase-by-phase tracking
+- Interactive Workload Migration Tracker
+- Explicit gating rules (Blockers, Secrets, Successful Run)
+- A concise **To Do (Next Actions)** section actively maintained by Maia
 
+This file answers:
+
+> *“What is the current state of this migration, and what should happen next?”*
+
+---
+
+### migration_documentation.md  
+**The refactor authority**
+
+- Lists **every supported and unsupported component type**
+- Defines **conditions that require refactor**
+- Documents **approved refactor paths**
+- Contains all authoritative `Upgrade:` sections:
+  - Python / Jython
+  - Bash
+  - API Extract / API Query
+  - Database Query / JDBC
+  - dbt
+  - Variables / Automatic Variables
+  - Iterators
+  - Temporary Tables
+  - Transactions
+  - Text Output
+  - Filter (Databricks)
+  - Replicate
+
+⚠️ Neither Maia nor users invent refactor logic.  
+All refactor guidance must originate from this file.
+
+---
+
+### component_details.csv  
+**Ground truth for component presence and location**
+
+Used to:
+- Locate components by exact pipeline path
+- Detect Python, Jython, Bash, API, dbt, JDBC usage
 - Identify shared pipelines
-- Identify ingestion systems
-- Identify output systems
-- Persist findings into MigrationStrategyandPlan.md
+- Identify ingestion and output systems
+- Tie refactor findings to concrete, auditable locations
+
+This file powers **both refactor discovery and validation detection**.
 
 ---
 
-## Phase 3: Refactor Discovery (Read-Only)
+### refactor_components.md  
+**Single source of truth for refactor work**
 
-### Purpose
-Identify components requiring refactor **without performing refactor**.
+Every refactor entry includes:
+- Workload name
+- Component name
+- Pipeline location
+- Severity: **Blocker / Warning / Advisory**
+- Status: **Pending / In Progress / Completed**
+- Auto-link to the exact `Upgrade:` section in `migration_documentation.md`
+- Referenced secrets (if applicable)
 
----
+Refactor behavior:
+- Discovered by Maia
+- Performed by the user
+- Tracked and gated here
 
-### Mandatory Permission Gate
-
-Prompt the user:
-
-> “I can perform a read-only scan to identify components that require refactor.  
-> No changes will be made. Proceed?”
-
-Proceed only on explicit approval.
-
----
-
-### Refactor Rules Authority
-
-`migration_documentation.md` is the **only source** of refactor logic.
-
-Maia must:
-- Detect refactor-required conditions
-- Link each finding to the exact **Upgrade:** section
-- Never invent remediation steps
+Validation and execution are **blocked** by unresolved **Blockers**.
 
 ---
 
-### Required Output
+### MassValidation.md  
+**Read-only validation rules**
 
-Generate or update:
+Validation:
+- Never performs refactor
+- Detects refactor-required conditions
+- Updates `refactor_components.md`
+- Generates immutable validation reports
 
-migration_project/customer_migration_workspace/refactor_components.md
+Detection logic explicitly references the conditions defined in
+`migration_documentation.md`.
 
----
-
-## Phase 4: Guided Refactor, Validation & Execution
-
-### Workload Execution Order (Strict)
-
-For each workload:
-
-#### 4.1 Refactor Discovery
-- Scan imported pipelines + component_details.csv
-- Apply refactor conditions from migration_documentation.md
-- Update refactor_components.md
-- Generate a per-workload checklist
-
-#### 4.2 Refactor Assistance
-- User performs refactor
-- Maia guides using migration_documentation.md
-- Track status: Pending → In Progress → Completed
-- Validation is blocked until all **Blockers** are Completed
-
-#### 4.3 Validation
-- Run MassValidation.md
-- Write report to:
-  migration_project/validation_reports/[WORKLOAD]_Validation_Report.md
-- Validation may identify *new* refactor conditions and must update
-  refactor_components.md accordingly
+Validation output is **evidence**, not instruction.
 
 ---
 
-### Mandatory Validation Artifacts
+### validation_reports/  
+**Immutable execution evidence**
 
-For **every** workload execution test, Maia must automatically produce:
+For each workload execution, Maia generates:
 
-#### 4.4 Validation Report
-- **Location:**  
-  `migration_project/validation_reports/{WORKLOAD_NAME}_Validation_Report.md`
+```text
+validation_reports/<WORKLOAD>_Validation_Report.md
 
-- **Required Sections:**
-  - Executive Summary
-  - Execution Test Results (with component trace)
-  - Root Cause Analysis
-  - Control Table Validation Status
-  - Blocker Hierarchy
-  - Pattern Classification (A or B)
-  - Comparison to Previous Workloads
-  - Next Actions
+Each report includes:
 
-- **Format:**  
-  Follow existing report templates (ACTIVATION_MASTER, BACKUP_MASTER, etc.)
+- **Validation scope**  
+  Pipelines, components, and checks executed as part of the validation run.
 
----
+- **Failures and warnings**  
+  Clear enumeration of blocking errors and non-blocking issues detected during validation.
 
-### Migration Strategy Update (Automatic)
+- **Refactor conditions detected**  
+  Any components identified as requiring refactor, aligned to conditions defined in `migration_documentation.md`.
 
-#### 4.5 Strategy File Update
-- **File:**  
-  `migration_project/customer_migration_workspace/[CUSTOMER]_Migration_Strategy.md`
-- Update workload status row in tracking table
-- Set appropriate status icon and blocker description
-- **Do NOT ask user permission** — update automatically after test completes
+- **Links back to `refactor_components.md`**  
+  Direct references to the corresponding refactor ledger entries for traceability and remediation tracking.
+
+- **Clear pass/fail signal**  
+  An explicit outcome indicating whether the workload is eligible to proceed toward a Successful Run.
+```
+
+Reports are **append-only** and must never be overwritten.
 
 ---
 
-## Execution Testing Workflow
+## 🔁 How the Framework Is Used (High-Level Flow)
 
-1. Run pipeline execution test
-2. Capture component results and error messages
-3. Analyze blocker type and pattern
-4. **Immediately create validation report** (no user prompt)
-5. **Immediately update migration strategy** (no user prompt)
-6. Present summary to user with quick actions
+1. **Initialize**  
+   - Confirm customer and initial workload  
+   - Validate required files are present  
 
----
+2. **Discovery (Read-Only)**  
+   - Shared pipelines and dependencies  
+   - Assets and environments  
+   - Refactor detection only  
 
-## Primary Error Identification (Critical)
+3. **Refactor (User-Performed)**  
+   - Guided by Maia  
+   - Governed by `migration_documentation.md`  
+   - Tracked in `refactor_components.md`  
+   - All **Blockers** must be completed before validation  
 
-**The PRIMARY blocker is ALWAYS the FIRST error encountered in the execution flow.**
+4. **Validation**  
+   - MassValidation rules applied  
+   - Validation report generated  
+   - Refactor conditions may be *identified* but not fixed  
 
-Maia must identify and document the PRIMARY blocker using the hierarchy below.
-
----
-
-### Blocker Hierarchy
-
-#### Priority 1: PRIMARY BLOCKER (First Failure)
-- Prevents all downstream processing
-- Occurs in normal execution path
-- Must be resolved first
-- Workload- or data-specific
-
-#### Priority 2: SECONDARY SYMPTOMS
-- Consequences of the primary failure
-- Includes logging, SNS, cleanup, audit failures
-
-#### Priority 3: FRAMEWORK ISSUES
-- Affect multiple or all workloads
-- Infrastructure, shared pipelines, configuration issues
+5. **Execution**  
+   - End-to-end pipeline run  
+   - **Successful Run** is the final authority for completion  
 
 ---
 
-### Execution Trace Analysis
+## 🧭 Key Design Principles
 
-When analyzing execution results, Maia must:
-
-1. Trace the execution path chronologically
-2. Identify the first failure in the success path
-3. Ignore error-handling branches
-4. Distinguish data flow from error reporting
-
----
-
-### Common Failure Patterns
-
-- Control table missing
-- API/database authentication
-- Schema or variable resolution
-- Python cursor usage
-- SNS-only failure (framework-level)
+- **Discovery ≠ Refactor**
+- **Refactor ≠ Validation**
+- **Validation ≠ Successful Run**
+- **Successful Run is the only completion signal**
+- **`refactor_components.md` is the single source of truth**
+- **All logic is explicit, documented, and auditable**
 
 ---
 
-### Validation Report Requirements
+## 👥 Intended Audience
 
-Every validation report MUST include:
+- Matillion Professional Services  
+- Matillion Field Engineering  
+- Partner Solution Architects  
+- Internal GTM and Migration Specialists  
 
-- Primary Blocker section
-- Secondary Errors section (if applicable)
-- Blocker hierarchy tree
-- Root cause analysis
-
----
-
-### Migration Strategy Status Updates
-
-- Status reflects **PRIMARY blocker only**
-- Format:  
-  `Blocked - [Blocker Type] ([Component Name])`
+This framework is designed to scale across:
+- Hundreds of pipelines  
+- Multiple workloads  
+- Multiple environments and cloud providers  
 
 ---
 
-### User Communication Format
+## 🚀 Getting Started (Internal Use)
 
-When requesting error information, Maia must ask for:
-
-- First failed component
-- Pipeline path
-- Complete error message
-- Subsequent errors (if any)
-
----
-
-### Exception Handling
-
-- Timeout → Document timeout
-- Success → Document success
-- Failure → Document failure and root cause
-
-**Rule:** Validation reports and strategy updates are mandatory deliverables.
+1. Clone this repository  
+2. Read **MigrationManagerInstructions.md** first  
+3. Copy templates into a new `customer_migration_workspace/`  
+4. Upload customer artifacts  
+5. Allow Maia to guide the migration  
 
 ---
 
-### Successful Run (Final Gate)
+## 📌 Final Note
 
-- Parent, child, and shared pipelines must all succeed
-- If any fail, assessment must be written to validation report
-- Only then may the workload be marked **Complete**
+This repository is **not a script**.  
+It is a **governed migration operating model**.
 
----
+If something is unclear, the answer should already exist in:
+- `MigrationManagerInstructions.md`
+- `migration_documentation.md`
 
-## Non-Negotiable Rules
-
-- Refactor discovery ≠ validation
-- Validation ≠ successful execution
-- refactor_components.md is the single source of truth
-- No workload completes without a Successful Run
+If it doesn’t, update the framework — **not the rules**.
