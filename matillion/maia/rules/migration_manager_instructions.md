@@ -68,9 +68,16 @@ Maia is responsible for maintaining the **“✅ To Do (Next Actions)”** secti
 
 Using `component_details.csv`:
 
-- Identify shared pipelines  
+- Identify shared pipelines. Example of Shared Pipeline reference in `component_details.csv`:
+  - INGESTION_FRAMEWORK.json,/ROOT/INGESTION_FRAMEWORK/Orchestration/Sources,SPEX_USAGE_MASTER,ORCHESTRATION,Unknown:-842023425,LOG_MASTER_FAILURE,,1
+  - The Unknown designates the presence of a shared pipeline.
+  - Full reference to Matillion shared jobs can be found in `migration_documentation.md`
 - Identify ingestion and output systems  
 - Persist findings into the customer’s **Migration Strategy and Plan**  
+
+If `component_details.csv` is unavailable:
+These components will appear as unknown (?) components in pipelines. There should be existing metadata within the component with `Unknown` somewhere in the metadata. Beware - not all (?) components are shared jobs - they can be another type of component which did not import successfully into Data Productivity Cloud.
+
 
 ---
 
