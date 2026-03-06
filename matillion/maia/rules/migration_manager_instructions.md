@@ -37,11 +37,13 @@ Verify the following files exist inside `customer_migration_workspace`:
 - `pipeline_component_inventory.md`
 - `MAUD.md`
 
-Verify the following files exist inside `.matillion/maia/skills/`:
+Verify the following files exist inside folders within `.matillion/maia/skills/`:
 
-- `migration_strategy_and_plan_template.md`  
-- `migration_documentation.md`  
-- `mass_validation.md`  
+- `migration-validation/SKILL.md`
+- `migration-strategy-and-plan-template/SKILL.md`
+- Multiple `SKILL.md` files within folders.
+
+Once verification has been made, detail which skill files are available for use.
 
 **Do not proceed if any file is missing.**
 
@@ -100,7 +102,9 @@ Proceed **only on explicit approval**.
 
 ### Refactor Rules Authority
 
-`.matillion/maia/skills/migration_documentation.md` is the **only source of refactor logic**.
+The sources of refactor logic are categorized by component type in the `.matillion/maia/skills/` folder. 
+
+When no available refactor logic can be found, use the following file as a source of refactor logic: `.matillion/maia/skills/migration_documentation/SKILL.md` 
 
 Maia must:
 
@@ -161,3 +165,47 @@ The **PRIMARY blocker** is **always the first error** encountered in the executi
 - Refactor discovery ≠ validation  
 - `refactor_components.md` is the **single source of truth**  
 - **No workload completes without a Successful Run**
+
+-- 
+
+## Skills Reference
+
+Maia has access to specialized skills that are activated automatically based on context.
+These skills provide detailed procedural guidance for specific migration scenarios.
+
+### Available Migration Skills
+
+| Skill | When Activated | Purpose |
+|-------|----------------|----------|
+| `migration-validation` | During Phase 3/4 validation | Detection rules, severity classification, report generation |
+| `migration-python-upgrade` | Refactoring Python/Jython components | Python 2→3, Jython cursor, Python Pushdown conversion |
+| `migration-api-upgrade` | Refactoring API Extract/Query | Custom connector setup, profile export/import |
+| `migration-bash-upgrade` | Refactoring Bash Script | Bash Pushdown configuration, SSH setup |
+| `migration-variables` | Refactoring variables | Automatic→system variable mapping, export variables |
+| `migration-connectors` | Refactoring Database Query, dbt | JDBC drivers, dbt repository config, transactions |
+| `migration-databricks` | Databricks-specific issues | Extract Nested Data, Filter quoting, Text Output |
+
+### Skill Activation
+
+Skills are activated automatically when:
+- Validating pipelines → `migration-validation`
+- Assisting with Python/Jython refactor → `migration-python-upgrade`
+- Assisting with API component refactor → `migration-api-upgrade`
+- Assisting with Bash script refactor → `migration-bash-upgrade`
+- Assisting with variable refactor → `migration-variables`
+- Assisting with connector/JDBC/dbt refactor → `migration-connectors`
+- Working with Databricks projects → `migration-databricks`
+
+### Trigger Examples
+
+Use these example phrases to get targeted migration assistance:
+
+| Skill | Example Questions/Requests |
+|-------|---------------------------|
+| `migration-validation` | "Run validation on this workload" • "Scan for refactor conditions" • "Check what needs to be fixed before execution" |
+| `migration-python-upgrade` | "My Python script uses context.cursor()" • "How do I convert Jython to Python 3?" • "Should I use Python Pushdown?" • "This script uses Python 2" |
+| `migration-api-upgrade` | "How do I migrate API Extract profiles?" • "API Query component is failing validation" • "Set up custom connector from API Extract" |
+| `migration-bash-upgrade` | "Convert Bash Script to Bash Pushdown" • "My bash script won't run in Full SaaS" • "Configure SSH for Bash Pushdown" |
+| `migration-variables` | "What's the DPC equivalent of job_id?" • "Map automatic variables to system variables" • "Export variable has no equivalent" • "thisComponent.rowCount not working" |
+| `migration-connectors` | "Database Query needs a JDBC driver" • "How do I configure dbt repository?" • "Sync File Source shows as Unknown" • "Temporary table not working" |
+| `migration-databricks` | "Extract Nested Data behavior changed" • "Filter quoting is different in DPC" • "Text Output migration for Redshift" |
