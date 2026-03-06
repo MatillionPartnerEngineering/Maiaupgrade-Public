@@ -10,143 +10,154 @@ The framework is designed to be operated by **Maia**, Matillion’s Migration Pr
 - Validation  
 - Execution  
 
-It supports **large-scale, multi-workload migrations** with clear gating rules, human oversight, and deterministic outcomes.
+This approach enables **large-scale, multi-workload migrations** with clear governance, human oversight, and deterministic outcomes.
 
 ---
 
-## 🧠 Primary Entry Point (Read First)
+# 🧠 Primary Entry Point
 
-### .matillion/maia/rules/migration_manager_instructions.md ⭐
+### `.matillion/maia/rules/migration_manager_instructions.md`
 
-This file is the **single source of operational truth**.
+This file is the **operational brain** of the migration system.
 
 It defines:
 
 - Maia’s role and authority  
-- Mandatory project structure  
-- Phase sequencing and gating  
-- What Maia may and may not do  
-- When user approval is required  
-- How validation, refactor, and execution interact  
+- Migration phase sequencing  
+- Required project structure  
+- Governance and approval gates  
+- Validation and execution rules  
+- How migration artifacts are generated and maintained  
 
-**If you read only one file, read this one.**
+If you read **one file**, read this one.
 
 ---
 
-## 📁 Repository Structure
+# 📁 Repository Structure
 
 ```plaintext
-.matillion/maia/
-├── rules/
-│   └── migration_manager_instructions.md    <-- Maia's Operational Brain
-└── skills/
-    ├── mass_validation.md                  <-- Validation Logic
-    ├── migration_documentation.md          <-- Refactor Authority
-    └── migration_strategy_and_plan_template.md
+.matillion/
+└── maia/
+    ├── rules/
+    │   └── migration_manager_instructions.md
+    │
+    └── skills/
+        ├── migration-validation/
+        │   └── SKILL.md
+        ├── migration-python-upgrade/
+        │   └── SKILL.md
+        ├── migration-api-upgrade/
+        │   └── SKILL.md
+        ├── migration-bash-upgrade/
+        │   └── SKILL.md
+        ├── migration-connectors/
+        │   └── SKILL.md
+        ├── migration-databricks/
+        │   └── SKILL.md
+        ├── migration-variables/
+        │   └── SKILL.md
+        └── migration-documentation/
+            └── SKILL.md
 
 migration_project/
-├── customer_migration_workspace/           <-- Customer-related assets
+├── customer_migration_workspace/
 │   ├── pipeline_component_inventory.md
 │   ├── MAUD.md
 │   ├── shared_jobs.md
 │   └── refactor_components.md
-└── validation_reports/                     <-- Detailed validation reports
+│
+└── validation_reports/
 ```
 
-## 📘 Core Files Explained
+# 🧩 Core System Concepts
 
-### migration_manager_instructions.md  
-**The operational brain of the framework**
+## Maia Rules
 
-- Defines who Maia is and how it behaves  
-- Governs all phases of the migration lifecycle  
-- Enforces read-only discovery and explicit user approval gates  
-- Prevents silent or implicit refactor  
-- Controls validation and execution sequencing  
-- Updates strategy and tracker files automatically  
-- Maintains the **To Do (Next Actions)** section in the migration plan  
+Located in:
 
----
 
-### migration_strategy_and_plan_template.md  
-**The live project ledger**
+.matillion/maia/rules/
 
-Includes:
 
-- Project Progress Dashboard with % progress bars  
-- Phase-by-phase tracking  
-- Interactive Workload Migration Tracker  
-- Explicit gating rules (Blockers, Secrets, Successful Run)  
-- A concise **To Do (Next Actions)** section actively maintained by Maia  
+Rules define the **governance layer** of the migration framework, including:
 
-This file answers:
+- Migration phases
+- Approval gates
+- Project state management
+- Required artifacts
+- Execution authority
 
-**“What is the current state of this migration, and what should happen next?”**
+The rules ensure migrations remain **deterministic, auditable, and controlled**.
 
 ---
 
-### migration_documentation.md  
-**The refactor authority**
+## Maia Skills
 
-- Lists every supported and unsupported component type  
-- Defines conditions that require refactor  
-- Documents approved refactor paths  
-- Contains all authoritative Upgrade sections:
-  - Python / Jython  
-  - Bash  
-  - API Extract / API Query  
-  - Database Query / JDBC  
-  - dbt  
-  - Variables / Automatic Variables  
-  - Iterators  
-  - Temporary Tables  
-  - Transactions  
-  - Text Output  
-  - Filter (Databricks)  
-  - Replicate  
+Located in:
 
-⚠️ **Neither Maia nor users invent refactor logic.**  
-All refactor guidance must originate from this file.
 
----
+.matillion/maia/skills/
 
-### pipeline_component_inventory.md
-**Ground truth for component presence, location, and migration classification**
 
-Contains every component across all pipelines with:
+Skills provide **targeted technical expertise** used by Maia during migration.
 
-- Pipeline path and component name
-- Component ID and usage count
-- Migration Type classification (Type 1 / Type 2 / Type 3)
-- OOM risk scores for Python/Bash components (when enriched by FDE Context Engine)
-- Refactor approach recommendations for Type 3 components
+Each skill activates automatically when relevant migration conditions are detected.
 
-Used to:
+### Examples
 
-- Locate components by exact pipeline path
-- Detect Python, Jython, Bash, API, dbt, JDBC usage
-- Identify shared pipelines (Type 3 `Unknown Component` entries)
-- Identify ingestion and output systems
-- Tie refactor findings to concrete, auditable locations
+| Skill | Purpose |
+|------|------|
+| `migration-validation` | Detect refactor conditions and generate validation reports |
+| `migration-python-upgrade` | Convert Python 2 / Jython components |
+| `migration-api-upgrade` | Migrate API Extract and API Query components |
+| `migration-bash-upgrade` | Convert Bash scripts to Bash Pushdown |
+| `migration-connectors` | Resolve JDBC, dbt, and database connector issues |
+| `migration-databricks` | Handle Databricks-specific migration differences |
+| `migration-variables` | Map automatic variables to DPC equivalents |
 
-This file powers both **refactor discovery** and **validation detection**.
+Each skill contains a `SKILL.md` file describing:
 
-> **Note:** This file supersedes the legacy `component_details.csv`. The markdown format provides richer context (Type classification, risk scores) that Maia can use directly during discovery and validation.
+- Detection logic
+- Refactor rules
+- Upgrade guidance
+- Validation patterns
 
 ---
 
-### refactor_components.md  
-**Single source of truth for refactor work**
+# 📊 Migration Artifacts
 
-Every refactor entry includes:
+## pipeline_component_inventory.md
+
+Ground truth for **all components across pipelines**.
+
+Contains:
+
+- Pipeline path and component name  
+- Component ID and usage count  
+- Migration classification (Type 1 / Type 2 / Type 3)  
+- Shared pipeline indicators  
+- OOM risk scores (when enriched)
+
+Used for:
+
+- Discovery
+- Refactor detection
+- Validation checks
+
+---
+
+## refactor_components.md
+
+The **single source of truth for refactor work**.
+
+Tracks:
 
 - Workload name  
-- Component name  
 - Pipeline location  
-- Severity: Blocker / Warning / Advisory  
-- Status: Pending / In Progress / Completed  
-- Auto-link to the exact Upgrade section in migration_documentation.md  
-- Referenced secrets (if applicable)  
+- Component name  
+- Severity (Blocker / Warning / Advisory)  
+- Status (Pending / In Progress / Completed)  
+- Upgrade reference section  
 
 Refactor behavior:
 
@@ -154,81 +165,106 @@ Refactor behavior:
 - Performed by the user  
 - Tracked and gated here  
 
-Validation and execution are blocked by unresolved **Blockers**.
-
 ---
 
-### mass_validation.md  
-**Read-only validation rules**
+## validation_reports/
 
-Validation:
+Contains **immutable validation reports** generated during execution testing.
 
-- Never performs refactor  
-- Detects refactor-required conditions  
-- Updates refactor_components.md  
-- Generates immutable validation reports  
+Example:
 
-Detection logic explicitly references conditions defined in  
-migration_documentation.md.
-
-Validation output is **evidence**, not instruction.
-
----
-
-## 📄 validation_reports  
-**Immutable execution evidence**
-
-For each workload execution, Maia generates:
 
 validation_reports/<WORKLOAD>_Validation_Report.md
 
-Each report includes:
 
-- Validation scope: Pipelines, components, and checks executed  
-- Failures and warnings: Blocking and non-blocking issues  
-- Refactor conditions detected: Aligned to migration_documentation.md  
-- Links back to refactor_components.md for traceability  
-- Clear pass/fail signal indicating eligibility for a Successful Run  
+Each report contains:
 
-Reports are append-only and must never be overwritten.
+- Execution results
+- Detected refactor conditions
+- Failure analysis
+- Blocker hierarchy
+- Root cause analysis
+- Recommended next actions
 
----
-
-## 🔁 How the Framework Is Used (High-Level Flow)
-
-### 1. Initialize
-- Confirm customer and initial workload  
-- Validate required files are present  
-
-### 2. Discovery (Read-Only)
-- Shared pipelines and dependencies  
-- Assets and environments  
-- Refactor detection only  
-
-### 3. Refactor (User-Performed)
-- Guided by Maia  
-- Governed by migration_documentation.md  
-- Tracked in refactor_components.md  
-- All Blockers must be completed before validation  
-
-### 4. Validation
-- MassValidation rules applied  
-- Validation report generated  
-- Refactor conditions may be identified but not fixed  
-
-### 5. Execution
-- End-to-end pipeline run  
-- **Successful Run** is the final authority for completion  
+Reports act as **auditable evidence** of migration status.
 
 ---
 
-## 🚀 Getting Started (Internal Use)
+# 🔁 Migration Lifecycle
 
-1. Clone this repository  
-2. Read migration_manager_instructions.md first  
-3. Initialize customer_migration_workspace with customer artifacts  
-4. Allow Maia to guide the migration  
+The migration framework follows a strict sequence.
+
+### 1️⃣ Initialization
+
+- Confirm customer and workload
+- Validate required files
+- Prepare workspace
+
+### 2️⃣ Discovery (Read-Only)
+
+- Identify shared pipelines
+- Identify ingestion systems
+- Identify output systems
+- Detect refactor conditions
+
+### 3️⃣ Refactor (User-Performed)
+
+- Guided by Maia
+- Governed by migration documentation
+- Tracked in `refactor_components.md`
+
+### 4️⃣ Validation
+
+- Apply validation rules
+- Generate validation report
+- Identify remaining blockers
+
+### 5️⃣ Execution
+
+- Run pipelines end-to-end
+- **Successful Run is the final authority**
 
 ---
 
-Maintained by **services@matillion.com**
+# 🚀 Getting Started
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/<repo>/Maiaupgrade-Public
+```
+
+Read the migration rules
+
+.matillion/maia/rules/migration_manager_instructions.md
+
+Populate:
+
+migration_project/customer_migration_workspace/
+
+Allow Maia to guide the migration workflow.
+
+---
+
+# ⚠️ Governance Principles
+
+This framework enforces strict migration rules:
+
+Discovery is read-only
+
+Refactor is user-performed
+
+Validation never modifies code
+
+Execution results determine completion
+
+All migration decisions must be traceable
+
+These guardrails ensure migrations remain safe, auditable, and repeatable.
+
+---
+
+# Maintainers
+
+Matillion Professional Services
+services@matillion.com
