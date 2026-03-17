@@ -44,19 +44,33 @@ If you read **one file**, read this one.
     └── skills/
         ├── migration-validation/
         │   └── SKILL.md
-        ├── migration-python-upgrade/
+        ├── migration-python/
         │   └── SKILL.md
         ├── migration-api-upgrade/
         │   └── SKILL.md
-        ├── migration-bash-upgrade/
+        ├── migration-bash/
         │   └── SKILL.md
         ├── migration-connectors/
+        │   └── SKILL.md
+        ├── migration-database-query/
+        │   └── SKILL.md
+        ├── migration-dbt/
         │   └── SKILL.md
         ├── migration-databricks/
         │   └── SKILL.md
         ├── migration-variables/
         │   └── SKILL.md
-        └── migration-documentation/
+        ├── migration-automatic-variables/
+        │   └── SKILL.md
+        ├── migration-shared-jobs/
+        │   └── SKILL.md
+        ├── migration-secrets/
+        │   └── SKILL.md
+        ├── migration-documentation/
+        │   └── SKILL.md
+        ├── migration-strategy-and-plan-template/
+        │   └── SKILL.md
+        └── migration-weekly-update/
             └── SKILL.md
 
 migration_project/
@@ -108,12 +122,20 @@ Each skill activates automatically when relevant migration conditions are detect
 | Skill | Purpose |
 |------|------|
 | `migration-validation` | Detect refactor conditions and generate validation reports |
-| `migration-python-upgrade` | Convert Python 2 / Jython components |
+| `migration-python` | Convert Python 2 / Jython components, Python Pushdown |
 | `migration-api-upgrade` | Migrate API Extract and API Query components |
-| `migration-bash-upgrade` | Convert Bash scripts to Bash Pushdown |
-| `migration-connectors` | Resolve JDBC, dbt, and database connector issues |
+| `migration-bash` | Convert Bash scripts to Bash Pushdown |
+| `migration-connectors` | Resolve JDBC and database connector issues |
+| `migration-database-query` | Database Query upgrade paths and driver compatibility |
+| `migration-dbt` | dbt Core repository config and Sync File Source removal |
 | `migration-databricks` | Handle Databricks-specific migration differences |
-| `migration-variables` | Map automatic variables to DPC equivalents |
+| `migration-variables` | Map variable types (env, job, grid) to DPC equivalents |
+| `migration-automatic-variables` | Map automatic variables to DPC system variable syntax |
+| `migration-shared-jobs` | Unpack, export, import, and refactor shared jobs |
+| `migration-secrets` | Recreate secrets and credentials in DPC |
+| `migration-documentation` | Master feature differences and migration specs |
+| `migration-strategy-and-plan-template` | Customer migration strategy with progress tracking |
+| `migration-weekly-update` | Weekly migration status update template |
 
 Each skill contains a `SKILL.md` file describing:
 
