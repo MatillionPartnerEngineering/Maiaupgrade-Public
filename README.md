@@ -68,6 +68,8 @@ If you read **one file**, read this one.
         │   └── SKILL.md
         ├── migration-documentation/
         │   └── SKILL.md
+        ├── migration-create-table-partial-grid-variable/
+        │   └── SKILL.md
         ├── migration-strategy-and-plan-template/
         │   └── SKILL.md
         └── migration-weekly-update/
@@ -135,6 +137,7 @@ Each skill activates automatically when relevant migration conditions are detect
 | `migration-secrets` | Recreate secrets and credentials in DPC |
 | `migration-documentation` | Master feature differences and migration specs |
 | `migration-strategy-and-plan-template` | Customer migration strategy with progress tracking |
+| `migration-create-table-partial-grid-variable` | Expand partial grid variables to full Create Table schema |
 | `migration-weekly-update` | Weekly migration status update template |
 
 Each skill contains a `SKILL.md` file describing:

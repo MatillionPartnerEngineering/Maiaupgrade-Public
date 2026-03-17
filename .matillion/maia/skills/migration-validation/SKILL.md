@@ -10,7 +10,34 @@ Validate migrated pipelines for correctness and readiness. **Validation does NOT
 ## Inputs Required
 - Workload folder name
 - component_details.csv
-- migration_documentation.md (refactor rule reference only)
+- Individual skill SKILL.md files (authoritative refactor guidance per condition)
+- `migration_documentation.md` (fallback reference when no dedicated skill exists)
+
+## Skill Cross-Reference
+
+Each detection rule maps to a dedicated skill that provides the refactor guidance. When a condition is detected, the corresponding skill is activated during Phase 4 refactor.
+
+| Detection Rule | Skill Path | Skill Purpose |
+|----------------|-----------|---------------|
+| 1. Python & Jython | `.matillion/maia/skills/migration-python/SKILL.md` | Python 2→3, Jython cursor, Python Pushdown |
+| 2. Bash Script | `.matillion/maia/skills/migration-bash/SKILL.md` | Bash Pushdown configuration, SSH setup |
+| 3. API Extract | `.matillion/maia/skills/migration-api-upgrade/SKILL.md` | Custom connector setup, profile export/import |
+| 4. API Query | `.matillion/maia/skills/migration-api-upgrade/SKILL.md` | Custom connector setup, profile export/import |
+| 5. Database Query / JDBC | `.matillion/maia/skills/migration-database-query/SKILL.md` + `.matillion/maia/skills/migration-connectors/SKILL.md` | Driver compatibility, JDBC upload |
+| 6. dbt | `.matillion/maia/skills/migration-dbt/SKILL.md` | Repository config, Sync File Source removal |
+| 7. Automatic / System Variables | `.matillion/maia/skills/migration-automatic-variables/SKILL.md` | System variable syntax mapping |
+| 8. Export Variables | `.matillion/maia/skills/migration-variables/SKILL.md` | Variable type mapping (env, job, grid) |
+| 9. Iterators | `.matillion/maia/skills/migration-variables/SKILL.md` | Iterator behavior differences |
+| 10. Temporary Tables | `migration_documentation.md → Upgrade: Temporary tables` | No dedicated skill — use documentation |
+| 11. Extract Nested Data (Databricks) | `.matillion/maia/skills/migration-databricks/SKILL.md` | Databricks-specific migration |
+| 12. Filter (Databricks) | `.matillion/maia/skills/migration-databricks/SKILL.md` | Databricks quoting differences |
+| 13. Replicate | `migration_documentation.md → Upgrade: Replicate` | No dedicated skill — use documentation |
+| 14. Text Output (Redshift) | `migration_documentation.md → Upgrade: Text Output` | No dedicated skill — use documentation |
+| 15. Transactions | `migration_documentation.md → Upgrade: Transactions` | No dedicated skill — use documentation |
+| 16. Filter with Null Value | `migration_documentation.md` | Core DPC concern |
+| 17. Connector Authentication | `.matillion/maia/skills/migration-secrets/SKILL.md` | Recreate secrets in DPC |
+| 18. Transformation Comments | `migration_documentation.md` | Core DPC concern |
+| 19. Create Table Partial Grid Variable | `.matillion/maia/skills/migration-create-table-partial-grid-variable/SKILL.md` | Expand partial grid variables to full schema |
 
 ## Validation Scope
 
@@ -246,6 +273,19 @@ Flag when:
 - Comments have been shown to break queries when passed to Snowflake
 
 **Severity:** Warning (validate manually)
+
+---
+
+### 1️⃣9️⃣ Create Table Partial Grid Variable
+**Reference:** `.matillion/maia/skills/migration-create-table-partial-grid-variable/SKILL.md`
+
+Flag when:
+- Create Table component uses a grid variable for column definitions
+- Grid variable contains only partial fields (e.g., `column_name`, `data_type`, `size`, `position`) instead of the full DPC schema
+- Missing optional fields cause runtime execution failure despite validation passing
+
+**Severity:**
+- **Blocker**: Runtime failure — partial grid variables must be expanded to include all column-definition fields (even if blank)
 
 ---
 

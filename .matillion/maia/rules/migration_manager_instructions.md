@@ -170,65 +170,31 @@ The **PRIMARY blocker** is **always the first error** encountered in the executi
 
 ## Skills Reference
 
-Maia has access to specialized skills that are activated automatically based on context.
-These skills provide detailed procedural guidance for specific migration scenarios.
+All migration skills are located in `.matillion/maia/skills/`. Each skill folder contains a `SKILL.md` with detection logic, refactor rules, and upgrade guidance.
 
-### Available Migration Skills
+### Central Orchestration Skill
 
-| Skill | When Activated | Purpose |
-|-------|----------------|----------|
-| `migration-validation` | During Phase 3/4 validation | Detection rules, severity classification, report generation |
-| `migration-python` | Refactoring Python/Jython components | Python 2→3, Jython cursor, Python Pushdown conversion |
-| `migration-api-upgrade` | Refactoring API Extract/Query | Custom connector setup, profile export/import |
-| `migration-bash` | Refactoring Bash Script | Bash Pushdown configuration, SSH setup |
-| `migration-variables` | Refactoring variables | Variable type mapping (env, job, grid) |
-| `migration-automatic-variables` | Refactoring automatic variables | Map automatic variables to DPC system variable syntax |
-| `migration-connectors` | Refactoring Database Query, JDBC | JDBC drivers, vendor restrictions, custom driver upload |
-| `migration-database-query` | Refactoring Database Query components | Database Query upgrade paths, driver compatibility |
-| `migration-dbt` | Refactoring dbt components | dbt Core repository config, Sync File Source removal |
-| `migration-databricks` | Databricks-specific issues | Extract Nested Data, Filter quoting, Text Output |
-| `migration-shared-jobs` | Shared pipeline migration | Unpack, export, import, and refactor shared jobs |
-| `migration-secrets` | Credential/secret migration | Recreate secrets in DPC secret manager |
-| `migration-documentation` | General migration reference | Master feature differences and migration specs |
-| `migration-strategy-and-plan-template` | Migration planning | Customer strategy document with progress tracking |
-| `migration-weekly-update` | Status reporting | Weekly migration status update template |
+**`migration-validation/SKILL.md`** is the **central orchestration skill** for the migration framework.
 
-### Skill Activation
+It defines:
+- **19 detection rules** with severity classifications (Blocker / Warning / Advisory)
+- **Skill cross-reference table** mapping each detection condition to its authoritative refactor skill
+- Validation report generation requirements
+- Enforcement rules (read-only, no bypass)
 
-Skills are activated automatically when:
-- Validating pipelines → `migration-validation`
-- Assisting with Python/Jython refactor → `migration-python`
-- Assisting with API component refactor → `migration-api-upgrade`
-- Assisting with Bash script refactor → `migration-bash`
-- Assisting with variable refactor → `migration-variables`
-- Assisting with automatic variable mapping → `migration-automatic-variables`
-- Assisting with connector/JDBC refactor → `migration-connectors`
-- Assisting with Database Query upgrade → `migration-database-query`
-- Assisting with dbt refactor → `migration-dbt`
-- Working with Databricks projects → `migration-databricks`
-- Migrating shared jobs/pipelines → `migration-shared-jobs`
-- Handling secrets/credentials → `migration-secrets`
-- General migration guidance → `migration-documentation`
-- Creating migration strategy → `migration-strategy-and-plan-template`
-- Generating status updates → `migration-weekly-update`
+### How Skills Are Used
 
-### Trigger Examples
+1. **Phase 3 (Discovery)** and **Phase 4.2 (Validation)**: Always start with `migration-validation` — it scans pipelines and identifies all conditions requiring refactor
+2. **Phase 4.1 (Refactor)**: The validation findings map to specific skills (see the Skill Cross-Reference table in `migration-validation/SKILL.md`) — those skills provide the step-by-step refactor guidance
+3. **Fallback**: When no dedicated skill exists for a condition, `migration-documentation/SKILL.md` serves as the master reference
 
-Use these example phrases to get targeted migration assistance:
+### Supporting Skills (Non-Validation)
 
-| Skill | Example Questions/Requests |
-|-------|---------------------------|
-| `migration-validation` | "Run validation on this workload" • "Scan for refactor conditions" • "Check what needs to be fixed before execution" |
-| `migration-python` | "My Python script uses context.cursor()" • "How do I convert Jython to Python 3?" • "Should I use Python Pushdown?" • "This script uses Python 2" |
-| `migration-api-upgrade` | "How do I migrate API Extract profiles?" • "API Query component is failing validation" • "Set up custom connector from API Extract" |
-| `migration-bash` | "Convert Bash Script to Bash Pushdown" • "My bash script won't run in Full SaaS" • "Configure SSH for Bash Pushdown" |
-| `migration-variables` | "What's the DPC equivalent of job_id?" • "Map automatic variables to system variables" • "Export variable has no equivalent" • "thisComponent.rowCount not working" |
-| `migration-automatic-variables` | "How do I map automatic variables?" • "What's the DPC syntax for system variables?" • "${sysvar} not working" |
-| `migration-connectors` | "Database Query needs a JDBC driver" • "Sync File Source shows as Unknown" • "Temporary table not working" |
-| `migration-database-query` | "Database Query component needs upgrading" • "Which databases migrate automatically?" • "How do I upload a custom driver?" |
-| `migration-dbt` | "How do I configure dbt repository?" • "Sync File Source needs removing" • "dbt Core component setup" |
-| `migration-databricks` | "Extract Nested Data behavior changed" • "Filter quoting is different in DPC" • "Text Output migration for Redshift" |
-| `migration-shared-jobs` | "How do I migrate shared jobs?" • "Shared pipeline fan-in count" • "Unpack shared job for export" |
-| `migration-secrets` | "Credentials didn't migrate" • "How do I recreate secrets in DPC?" • "Secret reference not found" |
-| `migration-strategy-and-plan-template` | "Create a migration strategy" • "Set up the migration plan" • "Initialize customer migration" |
-| `migration-weekly-update` | "Generate a weekly status update" • "Send migration progress report" |
+These skills support the migration lifecycle but are not triggered by validation detection:
+
+| Skill | Purpose |
+|-------|----------|
+| `migration-strategy-and-plan-template` | Customer migration strategy with progress tracking |
+| `migration-weekly-update` | Weekly migration status update template |
+| `migration-shared-jobs` | Unpack, export, import, and refactor shared jobs |
+| `migration-documentation` | Master feature differences and migration specs (fallback) |
