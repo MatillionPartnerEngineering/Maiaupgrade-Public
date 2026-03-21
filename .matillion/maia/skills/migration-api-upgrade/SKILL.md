@@ -113,6 +113,38 @@ Reference: https://docs.matillion.com/metl/docs/migration-api-query/
 
 ---
 
+---
+
+## DPC-Specific API Query Gotchas
+
+### Performance Regression vs METL
+
+**Severity: 🔴 Critical**
+
+The API Query component in DPC can run **30–100% slower** than the equivalent in METL. This is a confirmed, reproducible issue tied to dispatch overhead in the DPC architecture (not component misconfiguration).
+
+- Tracked as a known product issue (Backlog / Priority 3)
+- Affects all API Query executions, not just specific endpoints
+- The dispatch tax compounds for pipelines that make many sequential API calls
+
+**Remediation:**
+- Batch API calls where possible to reduce total component executions
+- Consider Python Pushdown for high-frequency API integrations
+- Set customer expectations before migration — this is a known platform difference
+
+### Deprecated Component Breakage Post-Upgrade
+
+**Severity: 🟠 High**
+
+Customers who delayed migration from the old API Query component format may hit **breaking behaviour changes** after upgrading to METL 1.78+. The old profile format is no longer compatible.
+
+**Remediation:**
+- Flag early in migration conversations: API Query profiles must be exported and re-imported
+- Customers still on old profile format post-1.78 should prioritise the export/import path above
+- SOAP API handling (XML-in-CSV responses) has known issues — test thoroughly
+
+---
+
 ## Best Practices
 
 1. **Start simple**: Begin with non-authenticated, non-paginated API Extract pipelines

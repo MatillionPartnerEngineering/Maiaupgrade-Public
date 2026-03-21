@@ -54,6 +54,8 @@ If you read **one file**, read this one.
         │   └── SKILL.md
         ├── migration-database-query/
         │   └── SKILL.md
+        ├── migration-oracle/
+        │   └── SKILL.md
         ├── migration-dbt/
         │   └── SKILL.md
         ├── migration-databricks/
@@ -63,8 +65,6 @@ If you read **one file**, read this one.
         ├── migration-automatic-variables/
         │   └── SKILL.md
         ├── migration-shared-jobs/
-        │   └── SKILL.md
-        ├── migration-secrets/
         │   └── SKILL.md
         ├── migration-secret-references/
         │   └── SKILL.md
@@ -86,7 +86,27 @@ If you read **one file**, read this one.
         │   └── SKILL.md
         ├── migration-environment-hardcoding/
         │   └── SKILL.md
-        └── migration-infrastructure-prerequisites/
+        ├── migration-infrastructure-prerequisites/
+        │   └── SKILL.md
+        ├── migration-salesforce-query-load/
+        │   └── SKILL.md
+        ├── migration-netsuite/
+        │   └── SKILL.md
+        ├── migration-postgresql/
+        │   └── SKILL.md
+        ├── migration-dpc-performance/
+        │   └── SKILL.md
+        ├── migration-dpc-component-behaviour/
+        │   └── SKILL.md
+        ├── migration-unknown-component-conversion/
+        │   └── SKILL.md
+        ├── migration-hardcoded-credential-detection/
+        │   └── SKILL.md
+        ├── migration-sns-authentication/
+        │   └── SKILL.md
+        ├── migration-rds-query-validation/
+        │   └── SKILL.md
+        └── migration-s3-iam-credential-setup/
             └── SKILL.md
 
 migration_project/
@@ -143,12 +163,12 @@ Each skill activates automatically when relevant migration conditions are detect
 | `migration-bash` | Convert Bash scripts to Bash Pushdown |
 | `migration-connectors` | Resolve JDBC and database connector issues |
 | `migration-database-query` | Database Query upgrade paths and driver compatibility |
+| `migration-oracle` | Oracle-specific performance, fetch size, data integrity, and authentication patterns |
 | `migration-dbt` | dbt Core repository config and Sync File Source removal |
 | `migration-databricks` | Handle Databricks-specific migration differences |
 | `migration-variables` | Map variable types (env, job, grid) to DPC equivalents |
 | `migration-automatic-variables` | Map automatic variables to DPC system variable syntax |
 | `migration-shared-jobs` | Unpack, export, import, and refactor shared jobs |
-| `migration-secrets` | Recreate secrets and credentials in DPC |
 | `migration-secret-references` | Fix incorrectly formatted secret references and missing concurrencyMethod |
 | `migration-documentation` | Master feature differences and migration specs |
 | `migration-create-table-partial-grid-variable` | Expand partial grid variables to full Create Table schema |
@@ -160,6 +180,16 @@ Each skill activates automatically when relevant migration conditions are detect
 | `migration-credentials-audit` | Pre-execution audit of hardcoded credentials and secret references |
 | `migration-environment-hardcoding` | Detect and remediate hardcoded environment references in pipelines |
 | `migration-infrastructure-prerequisites` | Pre-execution checklist for infrastructure dependencies |
+| `migration-salesforce-query-load` | Salesforce Query/Load gotchas, OAuth patterns, API selection, and migration guidance |
+| `migration-netsuite` | NetSuite connector gotchas, auth patterns, driver management, and performance tuning |
+| `migration-postgresql` | PostgreSQL connector gotchas, JSONB handling, case-sensitivity, driver changes, and METL internal DB upgrades |
+| `migration-dpc-performance` | DPC architecture dispatch tax, component overhead, CIS limits, and optimisation strategies |
+| `migration-dpc-component-behaviour` | Component behaviour drift (iterators, Join, CALC), agent stability, Git, SQS gaps, and known limitations |
+| `migration-unknown-component-conversion` | Detect and convert unknown-orchestration components back to proper DPC types (Excel Query mapping included) |
+| `migration-hardcoded-credential-detection` | Detect and remediate hardcoded passwords, usernames, and connection strings in migrated pipelines |
+| `migration-sns-authentication` | SNS Message component AWS auth setup, IAM permissions, and triage priority |
+| `migration-rds-query-validation` | RDS Query structural validation errors, skipped component issues, and credential conversion |
+| `migration-s3-iam-credential-setup` | S3/IAM credential configuration for Excel Query, SFTP, and S3 staging components |
 
 Each skill contains a `SKILL.md` file describing:
 

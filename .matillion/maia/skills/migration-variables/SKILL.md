@@ -21,6 +21,45 @@ Reference: https://docs.matillion.com/metl/docs/migration-variables/
 - `STRUCT` formats not supported
 - Scalar and grid variables **cannot share the same name** (grid is now a pipeline variable type)
 
+## DPC Variable Limitations
+
+### 1,000 Character Limit on Pipeline Variables
+
+**Severity: 🟠 High**
+
+Pipeline variables in DPC have a **1,000 character limit**. This catches customers migrating complex METL variable values (e.g., long SQL strings, JSON blobs, file paths).
+
+**Remediation:**
+- Audit variable values during METL→DPC migration scoping
+- For long SQL strings, move logic into SQL Script components or stored procedures
+- For JSON blobs, write to staging tables and read back rather than passing via variables
+
+### Variables Cannot Reference Secret Definitions
+
+**Severity: 🔴 Critical (Migration Blocker)**
+
+In METL, customers could dynamically reference secrets via variables. In DPC, **project variables cannot reference secret definition values** — this is a product gap (not yet available as of early 2026).
+
+**Remediation:**
+- Hard-code the secret name in the component
+- Or use Python to retrieve the secret dynamically
+- Flag early in migration conversations — this blocks customers with dynamic secret management patterns
+
+### Query Result to Scalar: Silent Variable Update Failure
+
+**Severity: 🟠 High**
+
+The Query Result to Scalar component can report **success but not actually update the pipeline variable**. No error is thrown — this is a silent failure.
+
+**Remediation:**
+- Always validate variable values downstream when using Query Result to Scalar
+- Add a logging/print step after QR2S to confirm the value was set
+- Do not assume success status means the variable was updated
+
+### Roles & Variable Permissions Documentation Gap
+
+The DPC project/environment roles documentation does not clearly document which roles can manage variables (Owner, Contributor, etc.). Customers hitting permission errors on variables have limited documentation to reference. When troubleshooting variable permission errors, escalate to support.
+
 ---
 
 ## Automatic Variables → System Variables
@@ -146,6 +185,21 @@ The component is improved in DPC — **Fixed/Grid** option no longer needed.
 
 **If Fixed/Grid = Fixed:**
 - Component works without mitigation
+
+---
+
+## Variable Interpolation Differences in DPC
+
+### Variable Concatenation in Component Parameters
+
+**Severity: 🟠 High**
+
+Variable interpolation behaves differently in DPC vs METL. String concatenation using variables in component parameters (particularly **target table names** in Database Query) can silently fail or produce unexpected results.
+
+**Remediation:**
+- Test variable expressions in isolation before embedding in target table parameters
+- Use the **Expression Editor** to validate interpolation before running
+- Single quotes in variable values require escaping in DPC
 
 ---
 

@@ -1,3 +1,8 @@
+---
+name: migration-python
+description: Python 2→3 conversion, Jython cursor migration, Python Pushdown, and DPC-specific Python gotchas (OOM, library persistence, grid payload limits) during Matillion ETL to DPC migration.
+---
+
 # Upgrade: Python
 
 Reference: https://docs.matillion.com/metl/docs/migration-python/
@@ -150,6 +155,71 @@ Grid variable handling differs between Matillion ETL Jython and DPC Python:
 Recommendation:
 
 - Use `copy.deepcopy()` (or appropriate alternatives) when you intend to modify retrieved grid variable data without side effects.
+
+---
+
+## DPC-Specific Python Gotchas
+
+### Agent Memory / OOM Crashes
+
+**Severity: 🔴 Critical**
+
+Python in DPC runs on the **agent**, not in the cloud. Large in-memory operations (big DataFrames, Excel loads, large loops) will exhaust agent memory and take down the agent instance — **killing ALL concurrent pipelines on that agent**, not just the failing one.
+
+| Risk Factor | Impact |
+|-------------|--------|
+| Large pandas DataFrames | Agent OOM crash |
+| Excel file processing | Memory spike → agent offline |
+| Large loops with accumulating data | Gradual memory exhaustion |
+| Multiple concurrent Python pipelines | Compound memory pressure |
+
+**Remediation:**
+- Move heavy processing to **Python Pushdown** (Snowflake) wherever possible
+- Chunk large data operations rather than loading entire datasets into memory
+- Monitor agent memory and set appropriate resource limits
+- Avoid running multiple memory-intensive Python pipelines concurrently on the same agent
+
+### Library Persistence on Container Restart
+
+**Severity: 🔴 Critical**
+
+Python libraries installed manually on the agent are **not persisted across container restarts** in some deployment models (notably Azure Container Apps). Libraries installed via pip will vanish after restart.
+
+**Remediation:**
+- Use the supported library loading mechanism (S3/Azure Blob) rather than manual pip install
+- For Azure Container App agents, include all required libraries in the deployment configuration
+- Document all required libraries so they can be reinstalled if needed
+
+### Grid Variable Payload Size Limit
+
+**Severity: 🟠 High**
+
+DPC has a hard **payload size limit** on the agent gateway workflow message bus that METL did not have. Large grid variables used inside Python scripts that worked in METL will fail in DPC with:
+
+```
+Could not process message as the payload that was generated in the response was too large
+```
+
+**Remediation:**
+- Reduce grid variable size — paginate or chunk large datasets
+- Write large datasets to Snowflake staging tables and read them back in Python rather than passing through grid variables
+- This also affects non-Python contexts — any component passing large grid variables may hit this limit
+
+### Data Sampling Timeout (2-Minute Hard Limit)
+
+**Severity: 🟠 High**
+
+Data sampling in DPC Designer has a **2-minute hard timeout**. For components processing large datasets:
+- Repeated sampling without reducing row count **stacks background tasks** on the agent
+- Stacked sampling tasks can cause OOM events, CPU spikes, and apparent "unresponsive Designer"
+- This compounds with Python components that do in-memory processing during sampling
+
+**Remediation:**
+- Always reduce sample row count before sampling large datasets
+- Avoid repeated sampling on the same component — it queues multiple tasks
+- For large tables, add a WHERE clause or LIMIT predicate before sampling
+
+---
 
 ## Upgrading to Python Pushdown (Snowflake)
 

@@ -199,4 +199,15 @@ These skills support the migration lifecycle but are not triggered by validation
 | `migration-shared-jobs` | Unpack, export, import, and refactor shared jobs |
 | `migration-documentation` | Master feature differences and migration specs (fallback) |
 | `migration-secret-references` | Identifies and fixes incorrectly formatted secret references (`secretReferenceNameId`) and missing `concurrencyMethod` in migrated `database-query` components |
+| `migration-database-query-oracle` | Oracle-specific fetch size, large table handling, data integrity, and auth patterns |
+| `migration-salesforce-query-load` | Salesforce Query/Load OAuth, API selection, row count issues, and component versioning |
+| `migration-netsuite` | NetSuite JDBC/SuiteAnalytics/Query auth, driver management, performance, and schema issues |
+| `migration-postgresql` | PostgreSQL JSONB handling, case-sensitivity, driver changes, blank/NULL issues, and METL internal DB upgrades |
+| `migration-dpc-performance` | DPC architecture dispatch tax, component overhead, CIS message limits, and optimisation strategies |
+| `migration-dpc-component-behaviour` | Component behaviour drift (iterators, Join, CALC), agent stability, Git integration, SQS gaps, and known limitations |
+| `unknown-component-conversion` | Detect and convert unknown-orchestration components back to proper DPC types with numeric-to-semantic parameter mapping |
+| `migration-hardcoded-credential-detection` | Detect and remediate hardcoded passwords, usernames, and connection strings in migrated pipelines |
+| `migration-sns-authentication` | SNS Message component AWS auth setup, IAM permissions, and triage priority |
+| `migration-rds-query-validation` | RDS Query structural validation, skipped component issues, and credential conversion |
+| `migration-s3-iam-credential-setup` | S3/IAM credential configuration for Excel Query, SFTP, and S3 staging components |
 | `migration-create-table-partial-grid-variable` | Expand partial grid variable definitions to full schema for Create Table components |
