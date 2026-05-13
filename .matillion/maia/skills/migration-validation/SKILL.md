@@ -1,7 +1,56 @@
 ---
 name: migration-validation
 description: Use when validating migrated pipelines, detecting refactor conditions, or running mass validation during Matillion ETL to DPC migration.
+schema_version: 1
+phases:
+  - discovery
+  - validation
+detection_rules:
+  - id: python-jython
+    title: Python & Jython Components
+    reference: "migration_documentation.md → Upgrade: Python"
+    body_anchor: python-jython
+    severity: blocker
+    applies_when:
+      component_types: [python-script]
+  - id: bash-script
+    title: Bash Script Components
+    reference: "migration_documentation.md → Upgrade: Bash scripts"
+    body_anchor: bash-script
+    severity: blocker
+    applies_when:
+      component_types: [bash-script]
+  - id: api-extract
+    title: API Extract Components
+    reference: "migration_documentation.md → Upgrade: API Extract"
+    body_anchor: api-extract
+    severity: blocker
+    applies_when:
+      component_types: [api-extract]
+  - id: api-query
+    title: API Query Components
+    reference: "migration_documentation.md → Upgrade: API Query"
+    body_anchor: api-query
+    severity: blocker
+    applies_when:
+      component_types: [api-query]
+  - id: database-query-jdbc
+    title: Database Query / JDBC Components
+    reference: "migration_documentation.md → Upgrade: Database Query"
+    body_anchor: database-query-jdbc
+    severity: blocker
+    applies_when:
+      component_types: [database-query]
+  - id: dbt
+    title: dbt Components
+    reference: "migration_documentation.md → Upgrade: dbt"
+    body_anchor: dbt
+    severity: blocker
+    applies_when:
+      component_types: [sync-file-source, dbt-core]
 ---
+
+> **Schema migration note (`schema_version: 1`)**: rules 1–6 below are promoted to structured `detection_rules`. Remaining rules stay prose-only in this PR and will be migrated in subsequent PRs. Consumers using `schema_version: 1` should treat un-promoted body sections as v0-style prose context. See `.matillion/maia/SCHEMA.md`.
 
 # Migration Validation Skill
 
@@ -59,6 +108,7 @@ During validation, detect conditions that require refactor. If detected:
 
 ## Detection Rules
 
+<a id="python-jython"></a>
 ### 1️⃣ Python & Jython Components
 **Reference:** `migration_documentation.md → Upgrade: Python`
 
@@ -75,6 +125,7 @@ Flag when:
 
 ---
 
+<a id="bash-script"></a>
 ### 2️⃣ Bash Script Components
 **Reference:** `migration_documentation.md → Upgrade: Bash scripts`
 
@@ -90,6 +141,7 @@ Flag when:
 
 ---
 
+<a id="api-extract"></a>
 ### 3️⃣ API Extract Components
 **Reference:** `migration_documentation.md → Upgrade: API Extract`
 
@@ -105,6 +157,7 @@ Flag when:
 
 ---
 
+<a id="api-query"></a>
 ### 4️⃣ API Query Components
 **Reference:** `migration_documentation.md → Upgrade: API Query`
 
@@ -118,6 +171,7 @@ Flag when:
 
 ---
 
+<a id="database-query-jdbc"></a>
 ### 5️⃣ Database Query / JDBC Components
 **Reference:** `migration_documentation.md → Upgrade: Database Query`
 
@@ -132,6 +186,7 @@ Flag when:
 
 ---
 
+<a id="dbt"></a>
 ### 6️⃣ dbt Components
 **Reference:** `migration_documentation.md → Upgrade: dbt`
 
