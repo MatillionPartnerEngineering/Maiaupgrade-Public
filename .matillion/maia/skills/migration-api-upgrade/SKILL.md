@@ -1,10 +1,30 @@
 ---
 name: migration-api-upgrade
 description: Use when refactoring API Extract or API Query components during Matillion ETL to DPC migration.
+schema_version: 1
+phases:
+  - refactor
+  - validation
+detection_rules:
+  - id: api-extract-migration
+    title: API Extract → custom connector
+    reference: "https://docs.matillion.com/metl/docs/migration-api-extract/"
+    body_anchor: api-extract-migration
+    severity: blocker
+    applies_when:
+      component_types: [api-extract]
+  - id: api-query-migration
+    title: API Query → custom connector
+    reference: "https://docs.matillion.com/metl/docs/migration-api-query/"
+    body_anchor: api-query-migration
+    severity: blocker
+    applies_when:
+      component_types: [api-query]
 ---
 
 # API Components Migration Guide
 
+<a id="api-extract-migration"></a>
 ## API Extract → Custom Connectors
 
 Reference: https://docs.matillion.com/metl/docs/migration-api-extract/
@@ -76,6 +96,7 @@ After importing job:
 
 ---
 
+<a id="api-query-migration"></a>
 ## API Query Migration
 
 Reference: https://docs.matillion.com/metl/docs/migration-api-query/

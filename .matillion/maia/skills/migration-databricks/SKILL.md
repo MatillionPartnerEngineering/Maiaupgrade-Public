@@ -1,8 +1,22 @@
 ---
 name: migration-databricks
 description: Use when refactoring Databricks-specific components like Extract Nested Data, Filter quoting issues, or Text Output during Matillion ETL to DPC migration.
+schema_version: 1
+phases:
+  - refactor
+  - validation
+detection_rules:
+  - id: databricks-migration
+    title: Databricks-specific component migration
+    reference: "https://docs.matillion.com/metl/docs/migration-databricks/"
+    body_anchor: databricks-migration
+    severity: warning
+    applies_when:
+      project_types: [databricks]
+      component_types: [extract-nested-data, filter, text-output]
 ---
 
+<a id="databricks-migration"></a>
 # Databricks-Specific Migration Guide
 
 ## Extract Nested Data → Extract Structured Data

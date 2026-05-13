@@ -1,0 +1,34 @@
+name: Lint Maia skills
+
+on:
+  pull_request:
+    paths:
+      - '.matillion/maia/skills/**'
+      - '.matillion/maia/SCHEMA.md'
+      - 'scripts/lint_skills.py'
+      - '.github/workflows/lint-skills.yml'
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Validate SKILL.md frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pyyaml
+        run: pip install pyyaml
+
+      - name: Run skill linter
+        run: python scripts/lint_skills.py

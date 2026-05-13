@@ -1,10 +1,23 @@
 ---
 name: migration-connectors
 description: Use when refactoring Database Query, JDBC, dbt, or other connector components during Matillion ETL to DPC migration.
+schema_version: 1
+phases:
+  - refactor
+  - validation
+detection_rules:
+  - id: database-query-connector
+    title: Database Query / JDBC connector migration
+    reference: "https://docs.matillion.com/metl/docs/migration-database-query/"
+    body_anchor: database-query-connector
+    severity: blocker
+    applies_when:
+      component_types: [database-query, rds-query, salesforce-query, replicate]
 ---
 
 # Connectors Migration Guide
 
+<a id="database-query-connector"></a>
 ## Database Query Migration
 
 Reference: https://docs.matillion.com/metl/docs/migration-database-query/

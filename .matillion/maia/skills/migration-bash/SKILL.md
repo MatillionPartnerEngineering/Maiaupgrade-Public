@@ -1,8 +1,21 @@
 ---
-name: migration-bash-upgrade
+name: migration-bash
 description: Use when refactoring Bash Script or converting to Bash Pushdown during Matillion ETL to DPC migration.
+schema_version: 1
+phases:
+  - refactor
+  - validation
+detection_rules:
+  - id: bash-script-migration
+    title: Bash Script component migration
+    reference: "https://docs.matillion.com/metl/docs/migration-bash/"
+    body_anchor: bash-script-migration
+    severity: blocker
+    applies_when:
+      component_types: [bash-script]
 ---
 
+<a id="bash-script-migration"></a>
 # Bash Scripts Migration Guide
 
 Reference: https://docs.matillion.com/metl/docs/migration-bash/

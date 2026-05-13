@@ -1,8 +1,21 @@
 ---
 name: migration-python
 description: Python 2→3 conversion, Jython cursor migration, Python Pushdown, and DPC-specific Python gotchas (OOM, library persistence, grid payload limits) during Matillion ETL to DPC migration.
+schema_version: 1
+phases:
+  - refactor
+  - validation
+detection_rules:
+  - id: python-script-migration
+    title: Python Script component migration
+    reference: "https://docs.matillion.com/metl/docs/migration-python/"
+    body_anchor: python-script-migration
+    severity: blocker
+    applies_when:
+      component_types: [python-script]
 ---
 
+<a id="python-script-migration"></a>
 # Upgrade: Python
 
 Reference: https://docs.matillion.com/metl/docs/migration-python/
