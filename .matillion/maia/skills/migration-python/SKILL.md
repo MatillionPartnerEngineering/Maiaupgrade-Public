@@ -1,6 +1,6 @@
 ---
 name: migration-python
-description: Python 2→3 conversion, Jython cursor migration, Python Pushdown, and DPC-specific Python gotchas (OOM, library persistence, grid payload limits) during Matillion ETL to DPC migration.
+description: Python Script components migrate automatically via the Script Pushdown component on the Shared Script Runner; covers the exception cases (Python 2→3 / Jython cursor conversion), optional Python Pushdown, and DPC-specific Python gotchas (OOM, library persistence, grid payload limits) during Matillion ETL to DPC migration.
 schema_version: 1
 phases:
   - refactor
@@ -20,9 +20,13 @@ detection_rules:
 
 Reference: https://docs.matillion.com/metl/docs/migration-python/
 
-The Data Productivity Cloud includes a **Python Script** component, but also offers other options for tasks that would require a Python Script in Matillion ETL. This includes native components such as **Print Variables**, and (for Snowflake environments) the **Python Pushdown** component.
+During migration, **Python Script** components are migrated to the **Script Pushdown** component **automatically** and run on the managed **Shared Script Runner** — a Matillion-managed environment. Manual refactoring is the **exception**, not the rule. DPC also offers native components (e.g. **Print Variables**) and, for Snowflake, the **Python Pushdown** component where those fit better.
 
-The Python Script component works differently in the Data Productivity Cloud because there is no underlying virtual machine. The component requires a **Hybrid SaaS** deployment, and you need to bear the following in mind:
+Reference:
+- Script Pushdown component: https://docs.maia.ai/docs/components/script-pushdown#script-pushdown
+- Shared Script Runner: https://docs.maia.ai/docs/guides/shared-script-runner
+
+Python runs differently in DPC than on a Matillion ETL Linux VM (there is no bring-your-own VM, and running scripts no longer requires a Hybrid SaaS deployment). Whether a script runs on the Shared Script Runner (the default) or on an exception path below, keep the following in mind:
 
 - Python scripts can't assume there is a filesystem that will persist after the script completes.
   - Unlike Matillion ETL running on a Linux VM with persistent disk, DPC agents are multiple containers and there is no guarantee a later process runs on the same container.
@@ -36,7 +40,11 @@ The Python Script component works differently in the Data Productivity Cloud bec
 - The Python version currently used by DPC is **3.10**.
   - If you are migrating a version of Python later than this, consider **Python Pushdown** instead (Snowflake only).
 
-## Upgrade path (recommended order)
+## Default path: automatic migration to Script Pushdown
+
+By default, Python Script components migrate **automatically** to the **Script Pushdown** component on the managed **Shared Script Runner** — no manual conversion or deployment choice is required for the vast majority of scripts. The options below are **optional optimisations or exception paths**; reach for them only when the default genuinely does not fit (e.g. compute-heavy workloads, or the Jython / Python 2 exceptions noted later).
+
+## Optional optimisations & exception paths
 
 1. **Replace with native components** where possible (e.g., Print Variables). Additional examples mentioned include: Move File, Delete File, Send Email with Attachment.
 2. In a **Snowflake** project, consider refactoring to use **Python Pushdown**.

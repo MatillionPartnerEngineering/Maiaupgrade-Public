@@ -1,6 +1,6 @@
 ---
 name: migration-bash
-description: Use when refactoring Bash Script or converting to Bash Pushdown during Matillion ETL to DPC migration.
+description: Use when migrating Bash Script components to DPC. Bash scripts migrate automatically via the Script Pushdown component on the Shared Script Runner; manual refactoring (or bring-your-own-VM Bash Pushdown) is the exception.
 schema_version: 1
 phases:
   - refactor
@@ -22,13 +22,30 @@ Reference: https://docs.matillion.com/metl/docs/migration-bash/
 
 ## Overview
 
-**Bash Script** components automatically import but may require refactor. Unlike Matillion ETL (runs on your Linux VM), DPC uses a SaaS model with no underlying VM.
+**Bash Script** components migrate **automatically**. The migration converts them to the **Script Pushdown** component, which executes on the managed **Shared Script Runner** — a Matillion-managed Linux environment. No bring-your-own-VM setup or manual refactor is required by default.
 
-## Upgrade Options
+Manual refactoring is now the **exception**, not the rule — reserve it for the specific cases called out below (e.g. scripts that depend on OS-level packages the Shared Script Runner does not provide, or that need custom CPU/memory beyond the shared runner's limits).
 
-### Option 1: Bash Pushdown (Recommended)
+Reference:
+- Script Pushdown component: https://docs.maia.ai/docs/components/script-pushdown#script-pushdown
+- Shared Script Runner: https://docs.maia.ai/docs/guides/shared-script-runner
 
-Run Bash scripts on a Linux VM you provide and connect to via SSH.
+## Default path: Script Pushdown on the Shared Script Runner
+
+Bash Script components are automatically migrated to **Script Pushdown** and run on the **Shared Script Runner**. This is the recommended path for the vast majority of Bash scripts and requires no manual work.
+
+**Why this is the default:**
+- Fully automatic during migration — no per-script conversion decision needed.
+- Runs on a Matillion-managed Linux environment (no VM for you to provision, secure, or patch).
+- Preserves standard shell behaviour for typical scripting (file staging, CLI tools, orchestration glue).
+
+## Exceptions — when manual attention is still needed
+
+Consider one of the alternatives below only when the default path genuinely does not fit:
+
+### Alternative 1: Bring-your-own-VM Bash Pushdown
+
+Run Bash scripts on a Linux VM you provide and connect to via SSH. Use this only when you need OS-level packages/applications not available on the Shared Script Runner, or CPU/memory beyond the shared runner's limits.
 
 **Advantages:**
 - Set CPU and memory as needed
@@ -39,29 +56,25 @@ Run Bash scripts on a Linux VM you provide and connect to via SSH.
 - You must manage, secure, and update the Linux VM
 - Network access required from DPC agent to VM
 
-### Option 2: Native Component Replacement
+### Alternative 2: Native Component Replacement
 
-Check if functionality has a native component equivalent:
+Where a script only did something a native component already does, replacing it can be cleaner:
 - **Print Variables** for debugging output
 - Other native components for file operations
 
-### Option 3: Python Pushdown (Snowflake Only)
+### Alternative 3: Python Pushdown (Snowflake Only)
 
-If workload can be written in Python instead.
+If the workload is better expressed in Python and the project is on Snowflake.
 
-### Option 4: Python Script (Hybrid SaaS Only)
+### Alternative 4: Python Script (Hybrid SaaS Only)
 
-If workload can be rewritten in Python.
-
-### Option 5: Keep Bash Script (Not Recommended)
-
-- Won't run in **Full SaaS**
-- May run with problems in **Hybrid SaaS**
-- Contact Matillion Support if needed
+If the workload is better rewritten in Python on a Hybrid SaaS agent.
 
 ---
 
-## Converting to Bash Pushdown
+## Converting to bring-your-own-VM Bash Pushdown (exception path)
+
+Only needed for Alternative 1 above — the default Script Pushdown / Shared Script Runner path requires none of these steps.
 
 ### Steps
 
@@ -100,9 +113,11 @@ DPC doesn't support directly accessing automatic variables through **Bash Script
 
 ---
 
-## Common Refactor Scenarios
+## Optional refactor scenarios
 
-| Original Bash Usage | Recommended Approach |
+These are **optional** improvements, not required migration steps — the default Script Pushdown path already runs Bash scripts as-is. Consider them only if you are actively simplifying a pipeline.
+
+| Original Bash Usage | Optional alternative |
 |---------------------|---------------------|
 | Print debug info | Use **Print Variables** component |
 | File operations | Use native file components |
